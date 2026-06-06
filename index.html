@@ -102,11 +102,21 @@
   </div>
 
   <script>
+    var APK_URL = 'https://expo.dev/artifacts/eas/nvLvVCJQDp3NYjhfDBdgRf.apk';
     var token = new URLSearchParams(location.search).get('token');
     var btn = document.getElementById('open-btn');
     if (token) {
-      var deepLink = 'bt4ever://accept-invite?token=' + encodeURIComponent(token);
-      btn.href = deepLink;
+      var t = encodeURIComponent(token);
+      var deepLink = 'bt4ever://accept-invite?token=' + t;
+      // Android (Chrome e navegador interno do WhatsApp) ignora navegação direta
+      // pra scheme custom — o formato intent:// abre o app de verdade e, se o
+      // app não estiver instalado, cai no fallback (download do APK).
+      var intentLink =
+        'intent://accept-invite?token=' + t +
+        '#Intent;scheme=bt4ever;package=com.bt4ever.app;' +
+        'S.browser_fallback_url=' + encodeURIComponent(APK_URL) + ';end';
+      var isAndroid = /android/i.test(navigator.userAgent);
+      btn.href = isAndroid ? intentLink : deepLink;
     } else {
       btn.style.opacity = '0.45';
       btn.addEventListener('click', function (e) { e.preventDefault(); });
