@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex" />
+  <title>BT4Ever — Convite</title>
+  <style>
+    :root {
+      --bg: #fbf6ea;
+      --ink: #15212b;
+      --ink2: #45565f;
+      --coral: #ff5a5f;
+      --ocean: #0e7490;
+      --card: #ffffff;
+      --divider: #e8e0d0;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 20px;
+    }
+    .card {
+      width: 100%;
+      max-width: 420px;
+      background: var(--card);
+      border: 1px solid var(--divider);
+      border-radius: 20px;
+      padding: 32px 24px;
+      text-align: center;
+      box-shadow: 0 8px 30px rgba(21, 33, 43, 0.08);
+    }
+    .logo { width: 110px; height: 110px; object-fit: contain; margin-bottom: 8px; }
+    h1 { font-size: 22px; margin-bottom: 6px; }
+    p { color: var(--ink2); font-size: 15px; line-height: 1.5; }
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 16px;
+      margin-top: 18px;
+      border: none;
+      border-radius: 100px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .btn-primary { background: var(--coral); color: #fff; }
+    .btn-secondary {
+      background: #fff;
+      color: var(--ink2);
+      border: 1.5px solid var(--divider);
+      font-size: 14px;
+      padding: 13px;
+    }
+    .steps {
+      text-align: left;
+      margin-top: 22px;
+      padding-top: 18px;
+      border-top: 1px solid var(--divider);
+      font-size: 14px;
+      color: var(--ink2);
+    }
+    .steps strong { color: var(--ink); }
+    .steps li { margin: 8px 0 8px 18px; }
+    .error { color: var(--coral); font-weight: 700; margin-top: 14px; }
+    .small { font-size: 12px; color: #97a3ab; margin-top: 18px; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <img class="logo" src="logo.png" alt="BT4Ever" />
+    <h1>Você foi convidado! 🎾</h1>
+    <p>Convite pra entrar na liga de beach tennis no app <strong>BT4Ever</strong>.</p>
+
+    <a id="open-btn" class="btn btn-primary" href="#">Abrir convite no app</a>
+    <a
+      class="btn btn-secondary"
+      href="https://expo.dev/artifacts/eas/nvLvVCJQDp3NYjhfDBdgRf.apk"
+    >Baixar o app (Android · APK)</a>
+
+    <p id="no-token" class="error" hidden>
+      Este link está sem o código do convite — abra o link completo que você recebeu.
+    </p>
+
+    <div class="steps">
+      <strong>Primeira vez?</strong>
+      <ol>
+        <li>Baixe e instale o app (botão acima). Se o Android avisar sobre "fonte desconhecida", toque em <em>instalar mesmo assim</em>.</li>
+        <li>Volte aqui e toque em <strong>Abrir convite no app</strong>.</li>
+        <li>No app: confirme seu e-mail, escolha apelido, lado e cor — e bem-vindo à liga!</li>
+      </ol>
+    </div>
+
+    <p class="small">BT4Ever · sports4ever.com.br</p>
+  </div>
+
+  <script>
+    var token = new URLSearchParams(location.search).get('token');
+    var btn = document.getElementById('open-btn');
+    if (token) {
+      var deepLink = 'bt4ever://accept-invite?token=' + encodeURIComponent(token);
+      btn.href = deepLink;
+    } else {
+      btn.style.opacity = '0.45';
+      btn.addEventListener('click', function (e) { e.preventDefault(); });
+      document.getElementById('no-token').hidden = false;
+    }
+  </script>
+</body>
+</html>
