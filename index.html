@@ -88,6 +88,10 @@
     <p id="no-token" class="error" hidden>
       Este link está sem o código do convite — abra o link completo que você recebeu.
     </p>
+    <p id="webview-hint" class="error" hidden>
+      Não abriu? Toque nos ⋮ (três pontinhos) aí no topo e escolha
+      <em>"Abrir no Chrome"</em> — depois toque de novo no botão.
+    </p>
 
     <div class="steps">
       <strong>Primeira vez?</strong>
@@ -117,6 +121,13 @@
         'S.browser_fallback_url=' + encodeURIComponent(APK_URL) + ';end';
       var isAndroid = /android/i.test(navigator.userAgent);
       btn.href = isAndroid ? intentLink : deepLink;
+      // Se 2s depois do toque a página ainda estiver visível, o navegador
+      // bloqueou o intent (webview teimoso) — mostra o caminho manual.
+      btn.addEventListener('click', function () {
+        setTimeout(function () {
+          if (!document.hidden) document.getElementById('webview-hint').hidden = false;
+        }, 2000);
+      });
     } else {
       btn.style.opacity = '0.45';
       btn.addEventListener('click', function (e) { e.preventDefault(); });
