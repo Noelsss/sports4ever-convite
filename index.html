@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="robots" content="noindex" />
-  <title>BT4Ever — Convite</title>
+  <title>Convite</title>
   <style>
     :root {
       --bg: #fbf6ea;
@@ -14,6 +14,15 @@
       --ocean: #0e7490;
       --card: #ffffff;
       --divider: #e8e0d0;
+    }
+    /* Variante FTV4Ever (?app=ftv) — paleta do app (lib/theme.ts FTV_COLORS). */
+    body.ftv {
+      --bg: #FFF9F4;
+      --ink: #003B8E;
+      --ink2: #2b4e80;
+      --coral: #FF7A1A;
+      --ocean: #1F9BEA;
+      --divider: #e2e6f2;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -75,15 +84,12 @@
 </head>
 <body>
   <div class="card">
-    <img class="logo" src="logo.png" alt="BT4Ever" />
-    <h1>Você foi convidado! 🎾</h1>
-    <p>Convite pra entrar na liga de beach tennis no app <strong>BT4Ever</strong>.</p>
+    <img id="logo" class="logo" src="logo.png" alt="BT4Ever" />
+    <h1 id="title">Você foi convidado! 🎾</h1>
+    <p id="subtitle">Convite pra entrar na liga de beach tennis no app <strong>BT4Ever</strong>.</p>
 
     <a id="open-btn" class="btn btn-primary" href="#">Abrir convite no app</a>
-    <a
-      class="btn btn-secondary"
-      href="https://expo.dev/artifacts/eas/nvLvVCJQDp3NYjhfDBdgRf.apk"
-    >Baixar o app (Android · APK)</a>
+    <a id="apk-btn" class="btn btn-secondary" href="#">Baixar o app (Android · APK)</a>
 
     <p id="no-token" class="error" hidden>
       Este link está sem o código do convite — abra o link completo que você recebeu.
@@ -103,23 +109,50 @@
       </ol>
     </div>
 
-    <p class="small">BT4Ever · sports4ever.com.br</p>
+    <p id="footer" class="small">BT4Ever · sports4ever.com.br</p>
   </div>
 
   <script>
-    var APK_URL = 'https://expo.dev/artifacts/eas/nvLvVCJQDp3NYjhfDBdgRf.apk';
+    // ── Variantes do app. Default = bt (sem ?app); ?app=ftv → FTV4Ever. ──
+    var VARIANTS = {
+      bt: {
+        scheme: 'bt4ever', pkg: 'com.bt4ever.app',
+        apk: 'https://expo.dev/artifacts/eas/nvLvVCJQDp3NYjhfDBdgRf.apk',
+        name: 'BT4Ever', sport: 'beach tennis', emoji: '🎾', logo: 'logo.png',
+      },
+      ftv: {
+        scheme: 'ftv4ever', pkg: 'com.ftv4ever.app',
+        // TODO: trocar pelo APK do build cad04a7c (paleta FTV) quando ele terminar.
+        apk: 'https://expo.dev/artifacts/eas/r67NDcbTU7K7Z7GzYX5Ve5.apk',
+        name: 'FTV4Ever', sport: 'futevôlei', emoji: '🏐', logo: 'logo-ftv.png',
+      },
+    };
+
+    var app = new URLSearchParams(location.search).get('app') === 'ftv' ? 'ftv' : 'bt';
+    var V = VARIANTS[app];
+    if (app === 'ftv') document.body.classList.add('ftv');
+
+    document.title = V.name + ' — Convite';
+    var logo = document.getElementById('logo');
+    logo.src = V.logo; logo.alt = V.name;
+    document.getElementById('title').textContent = 'Você foi convidado! ' + V.emoji;
+    document.getElementById('subtitle').innerHTML =
+      'Convite pra entrar na liga de ' + V.sport + ' no app <strong>' + V.name + '</strong>.';
+    document.getElementById('footer').textContent = V.name + ' · sports4ever.com.br';
+    document.getElementById('apk-btn').href = V.apk;
+
     var token = new URLSearchParams(location.search).get('token');
     var btn = document.getElementById('open-btn');
     if (token) {
       var t = encodeURIComponent(token);
-      var deepLink = 'bt4ever://accept-invite?token=' + t;
+      var deepLink = V.scheme + '://accept-invite?token=' + t;
       // Android (Chrome e navegador interno do WhatsApp) ignora navegação direta
       // pra scheme custom — o formato intent:// abre o app de verdade e, se o
       // app não estiver instalado, cai no fallback (download do APK).
       var intentLink =
         'intent://accept-invite?token=' + t +
-        '#Intent;scheme=bt4ever;package=com.bt4ever.app;' +
-        'S.browser_fallback_url=' + encodeURIComponent(APK_URL) + ';end';
+        '#Intent;scheme=' + V.scheme + ';package=' + V.pkg + ';' +
+        'S.browser_fallback_url=' + encodeURIComponent(V.apk) + ';end';
       var isAndroid = /android/i.test(navigator.userAgent);
       btn.href = isAndroid ? intentLink : deepLink;
       // Se 2s depois do toque a página ainda estiver visível, o navegador
